@@ -25,6 +25,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Camera"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""d9046848-d3df-4b7f-9348-9c0a6ff02d24"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -82,6 +90,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""43896915-6f96-48e8-9158-2a76ec367641"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -91,6 +110,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         // Player Movement
         m_PlayerMovement = asset.FindActionMap("Player Movement", throwIfNotFound: true);
         m_PlayerMovement_Movement = m_PlayerMovement.FindAction("Movement", throwIfNotFound: true);
+        m_PlayerMovement_Camera = m_PlayerMovement.FindAction("Camera", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -141,11 +161,13 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputActionMap m_PlayerMovement;
     private IPlayerMovementActions m_PlayerMovementActionsCallbackInterface;
     private readonly InputAction m_PlayerMovement_Movement;
+    private readonly InputAction m_PlayerMovement_Camera;
     public struct PlayerMovementActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerMovementActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_PlayerMovement_Movement;
+        public InputAction @Camera => m_Wrapper.m_PlayerMovement_Camera;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMovement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -158,6 +180,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Movement.started -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnMovement;
+                @Camera.started -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnCamera;
+                @Camera.performed -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnCamera;
+                @Camera.canceled -= m_Wrapper.m_PlayerMovementActionsCallbackInterface.OnCamera;
             }
             m_Wrapper.m_PlayerMovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -165,6 +190,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
+                @Camera.started += instance.OnCamera;
+                @Camera.performed += instance.OnCamera;
+                @Camera.canceled += instance.OnCamera;
             }
         }
     }
@@ -172,5 +200,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     public interface IPlayerMovementActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnCamera(InputAction.CallbackContext context);
     }
 }
